@@ -1,4 +1,5 @@
 import Header from "./components/Header";
+import heroVideo from "./assets/hero.mp4";
 import "./App.css";
 
 export default function App() {
@@ -11,7 +12,8 @@ export default function App() {
           loop
           muted
           playsInline
-          src="src/assets/hero.mp4"/>
+          src={heroVideo}>
+        </video>
 
         <div className="absolute inset-0 bg-black/1 z-0"/>
 
