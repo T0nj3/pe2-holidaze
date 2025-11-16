@@ -8,7 +8,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#292929] text-white flex flex-col relative overflow-hidden">
       <video
-        src="/heroo.mp4"
+        src="public/heroo.mp4.mov"
         autoPlay
         loop
         muted
