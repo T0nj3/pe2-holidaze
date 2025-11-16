@@ -6,8 +6,18 @@ export default function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <div className="min-h-screen bg-[#292929] text-white flex flex-col"> 
-      <Header />
+    <div className="min-h-screen bg-[#292929] text-white flex flex-col relative overflow-hidden">
+      <video
+        src="/hero.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute top-0 left-0 w-full h-full object-cover"
+      />
+      <div className="relative z-10">
+        <Header />
+      </div>
     </div>
   );
 }
