@@ -8,7 +8,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
   return (
     <header className="relative w-full">
       {isLanding && (
-        <div className="absolute inset-0 bg-black/65 backdrop-blur-sm z-0" />
+        <div className="absolute inset-0 bg-base/25 backdrop-blur-sm z-0" />
       )}
 
       <div

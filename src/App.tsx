@@ -3,6 +3,7 @@ import heroVideo from "./assets/hero.mp4"
 import Carousel from "./components/Carousel"
 import WhyBookSection from "./components/WhyBookSection";
 import DiscoverSection from "./components/DiscoverSection"
+import Footer from "./components/Footer";
 import "./App.css"
 
 export default function App() {
@@ -65,6 +66,8 @@ export default function App() {
 <WhyBookSection />
 
 <DiscoverSection/>
+
+      <Footer />
     </div>
 
   )
