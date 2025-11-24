@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useAuth } from "../context/AuthContext"
 
 type HeaderProps = {
   variant?: "landing" | "default"
@@ -8,10 +9,24 @@ export default function Header({ variant = "default" }: HeaderProps) {
   const isLanding = variant === "landing"
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const navItems = ["Home", "Venues", "My bookings"]
+  const { user, isVenueManager, logout } = useAuth()
+  const isLoggedIn = !!user
+
+  const navItems = isVenueManager
+    ? ["Home", "Venues", "My venues", "My bookings"]
+    : ["Home", "Venues", "My bookings"]
+
+  function handleLoginClick() {
+    window.location.href = "/login"
+  }
+
+  async function handleLogoutClick() {
+    await logout()
+    setIsMenuOpen(false)
+  }
 
   return (
-    <header className="relative w-full md:sticky md:top-0 md:z-30">
+    <header className="sticky top-0 z-30 w-full">
       {isLanding && (
         <div className="absolute inset-0 bg-base/25 backdrop-blur-sm z-0" />
       )}
@@ -22,22 +37,22 @@ export default function Header({ variant = "default" }: HeaderProps) {
           (isLanding ? "bg-transparent" : "bg-base")
         }
       >
-        <div className="mx-auto flex h-28 max-w-6xl items-center justify-between px-4 md:px-6">
+        <div className="mx-auto flex h-20 md:h-24 max-w-6xl items-center justify-between px-4 md:px-6">
           <div className="flex items-center gap-4">
             <button
               type="button"
               className="text-3xl leading-none md:hidden"
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-              onClick={() => setIsMenuOpen(open => !open)}
+              onClick={() => setIsMenuOpen((open) => !open)}
             >
               {isMenuOpen ? "✕" : "☰"}
             </button>
 
-            <span className="text-4xl font-serif md:text-4xl">Holidaze</span>
+            <span className="text-3xl md:text-4xl font-serif">Holidaze</span>
           </div>
 
           <nav className="hidden gap-8 text-lg md:flex">
-            {navItems.map(item => (
+            {navItems.map((item) => (
               <a
                 key={item}
                 href="#"
@@ -53,12 +68,32 @@ export default function Header({ variant = "default" }: HeaderProps) {
             ))}
           </nav>
 
-          <button
-            className="relative z-10 rounded-md bg-olive px-4 py-2 text-sm font-medium 
-                       !text-white hover:bg-olive/80 md:px-5 md:py-2 md:text-base"
-          >
-            Log in
-          </button>
+          <div className="flex items-center gap-3">
+            {isLoggedIn && (
+              <span className="hidden md:inline text-sm text-white/80">
+                {user?.name}
+                {isVenueManager && " · Venue manager"}
+              </span>
+            )}
+
+            {!isLoggedIn ? (
+              <button
+                className="rounded-md bg-olive px-4 py-2 text-sm font-medium 
+                           text-white hover:bg-olive/80 md:px-5 md:py-2 md:text-base"
+                onClick={handleLoginClick}
+              >
+                Log in
+              </button>
+            ) : (
+              <button
+                className="rounded-md bg-white/10 px-4 py-2 text-sm font-medium 
+                           text-white hover:bg-white/20 md:px-5 md:py-2 md:text-base"
+                onClick={handleLogoutClick}
+              >
+                Log out
+              </button>
+            )}
+          </div>
         </div>
 
         {isMenuOpen && (
@@ -69,7 +104,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
             }
           >
             <nav className="flex flex-col items-center gap-4 py-4 text-lg">
-              {navItems.map(item => (
+              {navItems.map((item) => (
                 <a
                   key={item}
                   href="#"
@@ -84,6 +119,22 @@ export default function Header({ variant = "default" }: HeaderProps) {
                   />
                 </a>
               ))}
+
+              {!isLoggedIn ? (
+                <button
+                  className="mt-2 rounded-md bg-olive px-5 py-2 text-base font-semibold text-white hover:bg-olive/80"
+                  onClick={handleLoginClick}
+                >
+                  Log in
+                </button>
+              ) : (
+                <button
+                  className="mt-2 rounded-md bg-white/10 px-5 py-2 text-base font-semibold text-white hover:bg-white/20"
+                  onClick={handleLogoutClick}
+                >
+                  Log out
+                </button>
+              )}
             </nav>
           </div>
         )}
