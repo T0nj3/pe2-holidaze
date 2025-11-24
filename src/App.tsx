@@ -1,6 +1,7 @@
 import Header from "./components/Header"
 import heroVideo from "./assets/hero.mp4"
 import Carousel from "./components/Carousel"
+import WhyBookSection from "./components/WhyBookSection";
 import "./App.css"
 
 export default function App() {
@@ -59,6 +60,9 @@ export default function App() {
       </section>
 
       <Carousel title="Popular stays" />
+
+<WhyBookSection />
     </div>
+
   )
 }

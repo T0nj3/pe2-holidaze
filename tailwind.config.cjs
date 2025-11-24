@@ -12,7 +12,7 @@ module.exports = {
         text: "#FFFFFF",
       },
       fontFamily: {
-        serif: ["Georgia", "serif"],
+        serif: ["Judson", "serif"],
       },
     },
   },
