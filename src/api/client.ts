@@ -19,14 +19,14 @@ export async function apiFetch<T>(
   options: RequestInit = {},
   accessToken?: string | null
 ): Promise<T> {
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
     "X-Noroff-API-Key": API_KEY,
-    ...options.headers,
+    ...(options.headers as Record<string, string> | undefined),
   }
 
   if (accessToken) {
-    (headers as Record<string, string>)["Authorization"] = `Bearer ${accessToken}`
+    headers["Authorization"] = `Bearer ${accessToken}`
   }
 
   const res = await fetch(`${BASE_URL}${path}`, {

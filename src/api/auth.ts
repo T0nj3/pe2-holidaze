@@ -4,11 +4,11 @@ import { apiFetch } from "./client"
 export type AuthUser = {
   name: string
   email: string
-  venueManager: boolean
   avatar?: {
     url: string
-    alt: string
+    alt?: string
   } | null
+  venueManager?: boolean
 }
 
 export type LoginBody = {
@@ -16,27 +16,48 @@ export type LoginBody = {
   password: string
 }
 
-type LoginResponse = {
-  data: AuthUser
-  meta: {
+export type RegisterBody = {
+  name: string
+  email: string
+  password: string
+  venueManager: boolean
+}
+
+type RawLoginResponse = {
+  data: AuthUser & {
     accessToken: string
   }
 }
 
+type RawRegisterResponse = {
+  data: AuthUser
+}
+
 export async function loginRequest(body: LoginBody) {
-  const res = await apiFetch<LoginResponse>("/auth/login?_holidaze=true", {
+  const res = await apiFetch<RawLoginResponse>("/auth/login?_holidaze=true", {
+    method: "POST",
+    body: JSON.stringify(body),
+  })
+
+  const { accessToken, ...user } = res.data
+
+  return {
+    user,
+    token: accessToken,
+  }
+}
+
+export async function registerRequest(body: RegisterBody) {
+  const res = await apiFetch<RawRegisterResponse>("/auth/register?_holidaze=true", {
     method: "POST",
     body: JSON.stringify(body),
   })
 
   return {
-    data: res.data,
-    accessToken: res.meta.accessToken,
+    user: res.data,
   }
 }
 
-// Noroff v2 har ikke eget logout-endepunkt – vi bare rydder lokalt.
-// Vi beholder den likevel som "API-funksjon" så AuthContext kan kalle den.
-export async function logoutRequest(): Promise<void> {
+export async function logoutRequest() {
   return Promise.resolve()
 }
