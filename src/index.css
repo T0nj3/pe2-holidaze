@@ -2,7 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: dark; }
-body { @apply bg-base text-text; 
-    font-family: 'Inter', sans-serif; }
+:root { 
+  color-scheme: dark; 
+}
 
+body { 
+  @apply bg-base text-text;
+  font-family: 'Inter', sans-serif;
+}

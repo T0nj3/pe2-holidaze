@@ -2,7 +2,7 @@ import midlertidigImage from "../assets/midlertidig.png"
 
 export default function DiscoverSection() {
   return (
-    <section className="bg-[#1E1E1E] py-16">
+    <section className="bg-[#1E1E1E] pb-0">
       <div className="w-full mx-auto px-4 md:px-0">
         <div className="relative overflow-hidden rounded-3xl md:rounded-none md:h-[420px] lg:h-[580px]">
           <img
