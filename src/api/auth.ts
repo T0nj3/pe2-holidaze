@@ -1,4 +1,3 @@
-// src/api/auth.ts
 import { apiFetch } from "./client"
 
 export type AuthUser = {
@@ -34,7 +33,7 @@ type RawRegisterResponse = {
 }
 
 export async function loginRequest(body: LoginBody) {
-  const res = await apiFetch<RawLoginResponse>("/auth/login?_holidaze=true", {
+  const res = await apiFetch<RawLoginResponse>("/auth/login", {
     method: "POST",
     body: JSON.stringify(body),
   })
@@ -48,7 +47,7 @@ export async function loginRequest(body: LoginBody) {
 }
 
 export async function registerRequest(body: RegisterBody) {
-  const res = await apiFetch<RawRegisterResponse>("/auth/register?_holidaze=true", {
+  const res = await apiFetch<RawRegisterResponse>("/auth/register", {
     method: "POST",
     body: JSON.stringify(body),
   })
