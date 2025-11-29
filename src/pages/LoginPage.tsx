@@ -2,6 +2,7 @@ import { useState } from "react"
 import Header from "../components/Header"
 import LoginForm from "../components/LoginForm"
 import RegisterForm from "../components/RegisterForm"
+import Footer from "../components/Footer" 
 
 export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "register">("login")
@@ -14,7 +15,7 @@ export default function LoginPage() {
         <div className="w-full max-w-3xl rounded-3xl bg-section px-6 py-8 shadow-2xl md:px-10 md:py-10">
           <div className="mb-8 flex flex-col items-center gap-4 md:flex-row md:justify-between">
             <h1 className="text-3xl md:text-4xl font-serif">
-              {mode === "login" ? "Log in to Holidaze" : "Create your Holidaze account"}
+              {mode === "login" ? "Log in" : "Register"}
             </h1>
 
             <div className="inline-flex rounded-full bg-[#333333] p-1 text-sm">
@@ -60,6 +61,7 @@ export default function LoginPage() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   )
 }
