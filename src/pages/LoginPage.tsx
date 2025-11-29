@@ -1,11 +1,15 @@
 import { useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import Header from "../components/Header"
 import LoginForm from "../components/LoginForm"
 import RegisterForm from "../components/RegisterForm"
-import Footer from "../components/Footer" 
 
 export default function LoginPage() {
-  const [mode, setMode] = useState<"login" | "register">("login")
+  const [searchParams] = useSearchParams()
+  const initialMode =
+    searchParams.get("mode") === "register" ? "register" : "login"
+
+  const [mode, setMode] = useState<"login" | "register">(initialMode)
 
   return (
     <div className="min-h-screen bg-base text-white">
@@ -14,7 +18,7 @@ export default function LoginPage() {
       <main className="flex min-h-[calc(100vh-7rem)] items-center justify-center px-4 py-10">
         <div className="w-full max-w-3xl rounded-3xl bg-section px-6 py-8 shadow-2xl md:px-10 md:py-10">
           <div className="mb-8 flex flex-col items-center gap-4 md:flex-row md:justify-between">
-            <h1 className="text-3xl md:text-4xl font-serif">
+            <h1 className="font-serif text-3xl md:text-4xl">
               {mode === "login" ? "Log in" : "Register"}
             </h1>
 
@@ -22,7 +26,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setMode("login")}
-                className={`px-4 py-1 rounded-full transition ${
+                className={`rounded-full px-4 py-1 transition ${
                   mode === "login" ? "bg-olive text-white" : "text-white/70"
                 }`}
               >
@@ -31,7 +35,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setMode("register")}
-                className={`px-4 py-1 rounded-full transition ${
+                className={`rounded-full px-4 py-1 transition ${
                   mode === "register" ? "bg-olive text-white" : "text-white/70"
                 }`}
               >
@@ -48,20 +52,20 @@ export default function LoginPage() {
             <div className="hidden max-w-xs flex-1 text-sm text-white/70 md:block">
               {mode === "login" ? (
                 <p>
-                  Log in with your <span className="font-semibold">stud.noroff.no</span> email
-                  to see your bookings, manage venues and plan your next stay.
+                  Log in with your{" "}
+                  <span className="font-semibold">stud.noroff.no</span> email to
+                  see your bookings, manage venues and plan your next stay.
                 </p>
               ) : (
                 <p>
-                  Create a Holidaze account to save favourites, make bookings and, if you are a
-                  venue manager, host your own stays.
+                  Create a Holidaze account to save favourites, make bookings
+                  and, if you are a venue manager, host your own stays.
                 </p>
               )}
             </div>
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }
