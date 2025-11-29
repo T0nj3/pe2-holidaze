@@ -1,8 +1,14 @@
 import { useState } from "react"
+import { NavLink, useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 
 type HeaderProps = {
   variant?: "landing" | "default"
+}
+
+type NavItem = {
+  label: string
+  path: string
 }
 
 export default function Header({ variant = "default" }: HeaderProps) {
@@ -11,24 +17,43 @@ export default function Header({ variant = "default" }: HeaderProps) {
 
   const { user, isVenueManager, logout } = useAuth()
   const isLoggedIn = !!user
+  const navigate = useNavigate()
 
-  const navItems = isVenueManager
-    ? ["Home", "Venues", "My venues", "My bookings"]
-    : ["Home", "Venues", "My bookings"]
+  const navItems: NavItem[] = [
+    { label: "Home", path: "/" },
+    { label: "Venues", path: "/venues" }, 
+  ]
+
+  if (isLoggedIn) {
+    navItems.push({ label: "My bookings", path: "/bookings" }) 
+  }
+
+  if (isVenueManager) {
+    navItems.push({ label: "My venues", path: "/my-venues" }) 
+  }
 
   function handleLoginClick() {
-    window.location.href = "./LoginPage"
+    navigate("./login")
+    setIsMenuOpen(false)
   }
 
   async function handleLogoutClick() {
     await logout()
     setIsMenuOpen(false)
+    navigate("/")
+  }
+
+  function linkBaseClasses(isActive: boolean) {
+    return [
+      "relative group",
+      isActive ? "text-white" : "text-white/80 hover:text-white",
+    ].join(" ")
   }
 
   return (
     <header className="sticky top-0 z-30 w-full">
       {isLanding && (
-        <div className="absolute inset-0 bg-base/25 backdrop-blur-sm z-0" />
+        <div className="absolute inset-0 z-0 bg-base/25 backdrop-blur-sm" />
       )}
 
       <div
@@ -37,7 +62,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
           (isLanding ? "bg-transparent" : "bg-base")
         }
       >
-        <div className="mx-auto flex h-20 md:h-24 max-w-6xl items-center justify-between px-4 md:px-6">
+        <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4 md:h-24 md:px-6">
           <div className="flex items-center gap-4">
             <button
               type="button"
@@ -48,29 +73,34 @@ export default function Header({ variant = "default" }: HeaderProps) {
               {isMenuOpen ? "✕" : "☰"}
             </button>
 
-            <span className="text-3xl md:text-4xl font-serif">Holidaze</span>
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="text-3xl font-serif md:text-4xl"
+            >
+              Holidaze
+            </button>
           </div>
 
           <nav className="hidden gap-8 text-lg md:flex">
             {navItems.map((item) => (
-              <a
-                key={item}
-                href="#"
-                className="relative group"
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) => linkBaseClasses(isActive)}
               >
-                {item}
+                {item.label}
                 <span
-                  className="absolute left-0 -bottom-1 h-[2px] w-0 
-                             bg-white transition-all duration-300 
-                             group-hover:w-full"
+                  className="absolute left-0 -bottom-1 h-[2px] w-0 bg-white 
+                             transition-all duration-300 group-hover:w-full"
                 />
-              </a>
+              </NavLink>
             ))}
           </nav>
 
           <div className="flex items-center gap-3">
             {isLoggedIn && (
-              <span className="hidden md:inline text-sm text-white/80">
+              <span className="hidden text-sm text-white/80 md:inline">
                 {user?.name}
                 {isVenueManager && " · Venue manager"}
               </span>
@@ -78,16 +108,14 @@ export default function Header({ variant = "default" }: HeaderProps) {
 
             {!isLoggedIn ? (
               <button
-                className="rounded-md bg-olive px-4 py-2 text-sm font-medium 
-                           text-white hover:bg-olive/80 md:px-5 md:py-2 md:text-base"
+                className="rounded-md bg-olive px-4 py-2 text-sm font-medium !text-white hover:bg-olive/80 md:px-5 md:py-2 md:text-base"
                 onClick={handleLoginClick}
               >
                 Log in
               </button>
             ) : (
               <button
-                className="rounded-md bg-white/10 px-4 py-2 text-sm font-medium 
-                           text-white hover:bg-white/20 md:px-5 md:py-2 md:text-base"
+                className="rounded-md bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20 md:px-5 md:py-2 md:text-base"
                 onClick={handleLogoutClick}
               >
                 Log out
@@ -99,25 +127,24 @@ export default function Header({ variant = "default" }: HeaderProps) {
         {isMenuOpen && (
           <div
             className={
-              "md:hidden border-t border-white/10 " +
+              "border-t border-white/10 md:hidden " +
               (isLanding ? "bg-base/80 backdrop-blur-sm" : "bg-base")
             }
           >
             <nav className="flex flex-col items-center gap-4 py-4 text-lg">
               {navItems.map((item) => (
-                <a
-                  key={item}
-                  href="#"
+                <NavLink
+                  key={item.path}
+                  to={item.path}
                   onClick={() => setIsMenuOpen(false)}
-                  className="relative group"
+                  className={({ isActive }) => linkBaseClasses(isActive)}
                 >
-                  {item}
+                  {item.label}
                   <span
-                    className="absolute left-0 -bottom-1 h-[2px] w-0 
-                               bg-white transition-all duration-300 
-                               group-hover:w-full"
+                    className="absolute left-0 -bottom-1 h-[2px] w-0 bg-white 
+                               transition-all duration-300 group-hover:w-full"
                   />
-                </a>
+                </NavLink>
               ))}
 
               {!isLoggedIn ? (
