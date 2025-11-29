@@ -17,7 +17,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
     : ["Home", "Venues", "My bookings"]
 
   function handleLoginClick() {
-    window.location.href = "/login"
+    window.location.href = "./LoginPage"
   }
 
   async function handleLogoutClick() {
