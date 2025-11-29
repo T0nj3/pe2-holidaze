@@ -1,26 +1,25 @@
-// src/context/AuthContext.tsx
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
   useState,
+  type ReactNode,
 } from "react"
-import type { ReactNode } from "react"
-import type { AuthUser, LoginBody } from "../api/auth"
-import { loginRequest, logoutRequest } from "../api/auth"
+import { loginRequest, type AuthUser, type LoginBody, logoutRequest } from "../api/auth"
 
-type AuthState = {
+type AuthContextValue = {
   user: AuthUser | null
   token: string | null
   isVenueManager: boolean
-  login: (body: LoginBody) => Promise<void>
-  logout: () => Promise<void>
   loading: boolean
   error: string | null
+  login: (body: LoginBody) => Promise<void>
+  logout: () => Promise<void>
+  setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>
 }
 
-const AuthContext = createContext<AuthState | undefined>(undefined)
+const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 const STORAGE_KEY = "holidaze_auth"
 
@@ -35,22 +34,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!raw) return
 
     try {
-      const parsed = JSON.parse(raw) as { user: AuthUser; token: string | null }
+      const parsed = JSON.parse(raw) as { user: AuthUser; token: string }
       setUser(parsed.user)
       setToken(parsed.token)
+      localStorage.setItem("holidaze_token", parsed.token)
     } catch {
       localStorage.removeItem(STORAGE_KEY)
+      localStorage.removeItem("holidaze_token")
     }
   }, [])
 
   const persist = useCallback((nextUser: AuthUser | null, nextToken: string | null) => {
     if (nextUser && nextToken) {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ user: nextUser, token: nextToken })
-      )
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: nextUser, token: nextToken }))
+      localStorage.setItem("holidaze_token", nextToken)
     } else {
       localStorage.removeItem(STORAGE_KEY)
+      localStorage.removeItem("holidaze_token")
     }
   }, [])
 
@@ -58,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (body: LoginBody) => {
       setLoading(true)
       setError(null)
+
       try {
         const { user: nextUser, token: nextToken } = await loginRequest(body)
         setUser(nextUser)
@@ -70,12 +71,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false)
       }
     },
-    [persist]
+    [persist],
   )
 
   const logout = useCallback(async () => {
     setLoading(true)
     setError(null)
+
     try {
       await logoutRequest()
     } finally {
@@ -90,7 +92,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, isVenueManager, login, logout, loading, error }}
+      value={{
+        user,
+        token,
+        isVenueManager,
+        loading,
+        error,
+        login,
+        logout,
+        setUser,
+      }}
     >
       {children}
     </AuthContext.Provider>
