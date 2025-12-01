@@ -1,16 +1,20 @@
 import { Routes, Route } from "react-router-dom"
 import HomePage from "./pages/HomePage"
 import LoginPage from "./pages/LoginPage"
+import VenuesPage from "./pages/VenuesPage"
 import VenuePage from "./pages/VenuePage"
 import ProfilePage from "./pages/ProfilePage"
+import MyFavoritesPage from "./pages/MyFavoritesPage"
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/venues" element={<VenuesPage />} />
       <Route path="/venues/:id" element={<VenuePage />} />
       <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/favorites" element={<MyFavoritesPage />} />
     </Routes>
   )
 }
