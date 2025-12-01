@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { Link, NavLink, useNavigate } from "react-router-dom"
+import { HiHeart } from "react-icons/hi2"
 import { useAuth } from "../context/AuthContext"
+import { useFavorites } from "../context/FavoritesContext"
 
 type HeaderProps = {
   variant?: "landing" | "default"
@@ -12,6 +14,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
 
   const { user, isVenueManager, logout } = useAuth()
+  const { favorites } = useFavorites()
   const isLoggedIn = !!user
   const navigate = useNavigate()
 
@@ -137,6 +140,22 @@ export default function Header({ variant = "default" }: HeaderProps) {
             >
               {hostCtaLabel}
             </button>
+
+            {isLoggedIn && (
+              <button
+                type="button"
+                onClick={() => navigate("/favorites")}
+                className="relative hidden h-9 w-9 items-center justify-center rounded-full bg-white/5 text-white hover:bg-white/10 md:inline-flex"
+                aria-label="View saved stays"
+              >
+                <HiHeart className="h-5 w-5" />
+                {favorites.length > 0 && (
+                  <span className="absolute -top-1 -right-1 rounded-full bg-rose-500 px-1 text-[10px] font-semibold leading-none">
+                    {favorites.length}
+                  </span>
+                )}
+              </button>
+            )}
 
             {isLoggedIn ? (
               <div className="relative hidden items-center gap-2 md:flex">
@@ -265,6 +284,17 @@ export default function Header({ variant = "default" }: HeaderProps) {
                 <>
                   <button
                     type="button"
+                    onClick={() => {
+                      navigate("/favorites")
+                      setIsMenuOpen(false)
+                      setIsProfileOpen(false)
+                    }}
+                    className="w-11/12 rounded-md bg-white/5 px-5 py-2 text-base !text-white hover:bg-white/10"
+                  >
+                    Saved stays
+                  </button>
+                  <button
+                    type="button"
                     onClick={goToProfile}
                     className="mt-2 w-11/12 rounded-md bg-white/5 px-5 py-2 text-base !text-white hover:bg-white/10"
                   >
@@ -281,7 +311,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
                     <button
                       type="button"
                       onClick={goToMyVenues}
-                      className="w-11/12 rounded-md bg-white/5 px-5 py-2 text-base !text-white hover:bg-white/10"
+                      className="w-11/12 rounded-md bg:white/5 px-5 py-2 text-base !text-white hover:bg-white/10"
                     >
                       My venues
                     </button>
