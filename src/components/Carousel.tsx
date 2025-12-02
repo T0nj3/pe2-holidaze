@@ -1,4 +1,3 @@
-// src/components/Carousel.tsx
 import { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { FaHeart, FaRegHeart, FaStar } from "react-icons/fa"
@@ -155,7 +154,6 @@ export default function Carousel({ title, venues, loading }: CarouselProps) {
             ))}
         </div>
 
-        {/* DESKTOP CAROUSEL */}
         <div className="relative mt-10 hidden md:block">
           <button
             onClick={() => scrollByAmount(-320)}

@@ -5,9 +5,9 @@ export type AuthUser = {
   email: string
   avatar?: {
     url: string
-    alt?: string
+    alt?: string | null
   } | null
-  venueManager?: boolean
+  venueManager?: boolean | null
 }
 
 export type LoginBody = {
@@ -33,7 +33,7 @@ type RawRegisterResponse = {
 }
 
 export async function loginRequest(body: LoginBody) {
-  const res = await apiFetch<RawLoginResponse>("/auth/login", {
+  const res = await apiFetch<RawLoginResponse>("/auth/login?_holidaze=true", {
     method: "POST",
     body: JSON.stringify(body),
   })
