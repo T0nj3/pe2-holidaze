@@ -5,6 +5,7 @@ import VenuesPage from "./pages/VenuesPage"
 import VenuePage from "./pages/VenuePage"
 import ProfilePage from "./pages/ProfilePage"
 import MyFavoritesPage from "./pages/MyFavoritesPage"
+import HostProfilePage from "./pages/HostProfilePage"
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
       <Route path="/venues/:id" element={<VenuePage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/favorites" element={<MyFavoritesPage />} />
+      <Route path="/host/:name" element={<HostProfilePage />} />
     </Routes>
   )
 }
