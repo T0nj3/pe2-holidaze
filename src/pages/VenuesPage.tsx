@@ -43,7 +43,13 @@ export default function VenuesPage() {
         setError(null)
         setVisibleCount(PAGE_SIZE)
 
-        const data = await getVenues(currentQuery || undefined)
+        const trimmed = currentQuery.trim()
+
+        const data = await getVenues(
+          trimmed
+            ? { search: trimmed, limit: 40 }
+            : { limit: 40 },
+        )
 
         if (!ignore) {
           setVenues(data)

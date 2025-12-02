@@ -12,6 +12,7 @@ export type Profile = {
     url: string
     alt?: string | null
   } | null
+  venueManager?: boolean | null
   _count?: {
     venues?: number
     bookings?: number
@@ -34,16 +35,16 @@ export async function getProfile(name: string) {
 }
 
 export type UpdateProfileBody = {
-    bio?: string | null
-    avatar?: {
-      url: string
-      alt?: string | null
-    } | null
-    banner?: {
-      url: string
-      alt?: string | null
-    } | null
-  }
+  bio?: string | null
+  avatar?: {
+    url: string
+    alt?: string | null
+  } | null
+  banner?: {
+    url: string
+    alt?: string | null
+  } | null
+}
 
 export async function updateProfile(name: string, body: UpdateProfileBody) {
   const res = await apiFetch<RawProfileResponse>(

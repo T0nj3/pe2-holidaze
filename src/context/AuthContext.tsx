@@ -1,117 +1,169 @@
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useState,
   type ReactNode,
 } from "react"
-import { loginRequest, type AuthUser, type LoginBody, logoutRequest } from "../api/auth"
+import type { AuthUser, LoginBody } from "../api/auth"
+import { loginRequest, logoutRequest } from "../api/auth"
+import { getProfile } from "../api/profile"
 
 type AuthContextValue = {
   user: AuthUser | null
   token: string | null
-  isVenueManager: boolean
   loading: boolean
   error: string | null
   login: (body: LoginBody) => Promise<void>
   logout: () => Promise<void>
+  isVenueManager: boolean
   setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
-const STORAGE_KEY = "holidaze_auth"
+export function useAuth() {
+  const ctx = useContext(AuthContext)
+  if (!ctx) {
+    throw new Error("useAuth must be used within an AuthProvider")
+  }
+  return ctx
+}
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null)
-  const [token, setToken] = useState<string | null>(null)
+type AuthProviderProps = {
+  children: ReactNode
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [user, setUser] = useState<AuthUser | null>(() => {
+    try {
+      const stored = localStorage.getItem("holidaze_auth")
+      if (stored) {
+        const parsed = JSON.parse(stored) as { user: AuthUser }
+        return parsed.user ?? null
+      }
+
+      const rawUser = localStorage.getItem("holidaze_user")
+      if (rawUser) {
+        return JSON.parse(rawUser) as AuthUser
+      }
+    } catch {
+    }
+    return null
+  })
+
+  const [token, setToken] = useState<string | null>(() => {
+    try {
+      const stored = localStorage.getItem("holidaze_auth")
+      if (stored) {
+        const parsed = JSON.parse(stored) as { token: string }
+        return parsed.token ?? null
+      }
+      return localStorage.getItem("holidaze_token")
+    } catch {
+      return null
+    }
+  })
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const isVenueManager = !!user?.venueManager
+
   useEffect(() => {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return
-
-    try {
-      const parsed = JSON.parse(raw) as { user: AuthUser; token: string }
-      setUser(parsed.user)
-      setToken(parsed.token)
-      localStorage.setItem("holidaze_token", parsed.token)
-    } catch {
-      localStorage.removeItem(STORAGE_KEY)
-      localStorage.removeItem("holidaze_token")
-    }
-  }, [])
-
-  const persist = useCallback((nextUser: AuthUser | null, nextToken: string | null) => {
-    if (nextUser && nextToken) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: nextUser, token: nextToken }))
-      localStorage.setItem("holidaze_token", nextToken)
+    if (user && token) {
+      const payload = { user, token }
+      localStorage.setItem("holidaze_auth", JSON.stringify(payload))
+      localStorage.setItem("holidaze_user", JSON.stringify(user))
+      localStorage.setItem("holidaze_token", token)
     } else {
-      localStorage.removeItem(STORAGE_KEY)
+      localStorage.removeItem("holidaze_auth")
+      localStorage.removeItem("holidaze_user")
       localStorage.removeItem("holidaze_token")
     }
-  }, [])
+  }, [user, token])
 
-  const login = useCallback(
-    async (body: LoginBody) => {
-      setLoading(true)
-      setError(null)
+  useEffect(() => {
+    if (!user || !token) return
+    if (user.venueManager !== undefined && user.venueManager !== null) return
 
+    const safeUser = user as AuthUser
+    const username = safeUser.name
+    const baseAvatar = safeUser.avatar ?? null
+
+    let ignore = false
+
+    async function enrichFromProfile() {
       try {
-        const { user: nextUser, token: nextToken } = await loginRequest(body)
-        setUser(nextUser)
-        setToken(nextToken)
-        persist(nextUser, nextToken)
-      } catch (err: any) {
-        setError(err?.message || "Could not log in")
-        throw err
-      } finally {
-        setLoading(false)
-      }
-    },
-    [persist],
-  )
+        const profile = await getProfile(username)
+        if (ignore) return
 
-  const logout = useCallback(async () => {
+        const enriched: AuthUser = {
+          ...safeUser,
+          venueManager: !!profile.venueManager,
+          avatar: profile.avatar ?? baseAvatar,
+        }
+
+        setUser(enriched)
+      } catch {
+      }
+    }
+
+    enrichFromProfile()
+
+    return () => {
+      ignore = true
+    }
+  }, [user, token])
+
+  async function login(body: LoginBody) {
     setLoading(true)
     setError(null)
 
     try {
-      await logoutRequest()
-    } finally {
+      const { user: baseUser, token: newToken } = await loginRequest(body)
+
+      setToken(newToken)
+      let enrichedUser: AuthUser = { ...baseUser }
+
+      try {
+        const profile = await getProfile(baseUser.name)
+        enrichedUser = {
+          ...baseUser,
+          venueManager: !!profile.venueManager,
+          avatar: profile.avatar ?? baseUser.avatar ?? null,
+        }
+      } catch {
+      }
+
+      setUser(enrichedUser)
+    } catch (err: any) {
+      console.error(err)
       setUser(null)
       setToken(null)
-      persist(null, null)
+      setError(err?.message || "Login failed")
+    } finally {
       setLoading(false)
     }
-  }, [persist])
-
-  const isVenueManager = !!user?.venueManager
-
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        token,
-        isVenueManager,
-        loading,
-        error,
-        login,
-        logout,
-        setUser,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  )
-}
-
-export function useAuth() {
-  const ctx = useContext(AuthContext)
-  if (!ctx) {
-    throw new Error("useAuth must be used inside AuthProvider")
   }
-  return ctx
+
+  async function logout() {
+    await logoutRequest()
+    setUser(null)
+    setToken(null)
+    setError(null)
+  }
+
+  const value: AuthContextValue = {
+    user,
+    token,
+    loading,
+    error,
+    login,
+    logout,
+    isVenueManager,
+    setUser,
+  }
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

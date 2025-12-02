@@ -13,9 +13,13 @@ export default function Header({ variant = "default" }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
 
-  const { user, isVenueManager, logout } = useAuth()
-  const { favorites } = useFavorites()
+  const { user, logout } = useAuth()
   const isLoggedIn = !!user
+  const isVenueManager = user?.venueManager === true
+
+  const { favorites } = useFavorites()
+  const favoritesCount = favorites.length
+
   const navigate = useNavigate()
 
   const mainNav = [
@@ -72,6 +76,12 @@ export default function Header({ variant = "default" }: HeaderProps) {
 
   function goToMyVenues() {
     navigate("/my-venues")
+    setIsProfileOpen(false)
+    setIsMenuOpen(false)
+  }
+
+  function goToFavorites() {
+    navigate("/favorites")
     setIsProfileOpen(false)
     setIsMenuOpen(false)
   }
@@ -144,14 +154,18 @@ export default function Header({ variant = "default" }: HeaderProps) {
             {isLoggedIn && (
               <button
                 type="button"
-                onClick={() => navigate("/favorites")}
+                onClick={goToFavorites}
                 className="relative hidden h-9 w-9 items-center justify-center rounded-full bg-white/5 text-white hover:bg-white/10 md:inline-flex"
-                aria-label="View saved stays"
+                aria-label="View favourites"
               >
-                <HiHeart className="h-5 w-5" />
-                {favorites.length > 0 && (
-                  <span className="absolute -top-1 -right-1 rounded-full bg-rose-500 px-1 text-[10px] font-semibold leading-none">
-                    {favorites.length}
+                <HiHeart
+                  className={
+                    favoritesCount > 0 ? "h-5 w-5 text-rose-400" : "h-5 w-5"
+                  }
+                />
+                {favoritesCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-semibold text-white">
+                    {favoritesCount}
                   </span>
                 )}
               </button>
@@ -181,7 +195,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
                 </button>
 
                 {isProfileOpen && (
-                  <div className="absolute right-0 top-11 w-48 rounded-xl border border-white/10 bg-base/95 p-2 text-sm shadow-xl">
+                  <div className="absolute right-0 top-11 w-52 rounded-xl border border-white/10 bg-base/95 p-2 text-sm shadow-xl">
                     <button
                       type="button"
                       onClick={goToProfile}
@@ -205,6 +219,18 @@ export default function Header({ variant = "default" }: HeaderProps) {
                         <span>My venues</span>
                       </button>
                     )}
+                    <button
+                      type="button"
+                      onClick={goToFavorites}
+                      className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left hover:bg-white/10"
+                    >
+                      <span>Favourites</span>
+                      {favoritesCount > 0 && (
+                        <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs">
+                          {favoritesCount}
+                        </span>
+                      )}
+                    </button>
                     <button
                       type="button"
                       onClick={handleLogoutClick}
@@ -284,17 +310,6 @@ export default function Header({ variant = "default" }: HeaderProps) {
                 <>
                   <button
                     type="button"
-                    onClick={() => {
-                      navigate("/favorites")
-                      setIsMenuOpen(false)
-                      setIsProfileOpen(false)
-                    }}
-                    className="w-11/12 rounded-md bg-white/5 px-5 py-2 text-base !text-white hover:bg-white/10"
-                  >
-                    Saved stays
-                  </button>
-                  <button
-                    type="button"
                     onClick={goToProfile}
                     className="mt-2 w-11/12 rounded-md bg-white/5 px-5 py-2 text-base !text-white hover:bg-white/10"
                   >
@@ -311,11 +326,23 @@ export default function Header({ variant = "default" }: HeaderProps) {
                     <button
                       type="button"
                       onClick={goToMyVenues}
-                      className="w-11/12 rounded-md bg:white/5 px-5 py-2 text-base !text-white hover:bg-white/10"
+                      className="w-11/12 rounded-md bg-white/5 px-5 py-2 text-base !text-white hover:bg-white/10"
                     >
                       My venues
                     </button>
                   )}
+                  <button
+                    type="button"
+                    onClick={goToFavorites}
+                    className="w-11/12 rounded-md bg-white/5 px-5 py-2 text-base !text-white hover:bg-white/10"
+                  >
+                    Favourites
+                    {favoritesCount > 0 && (
+                      <span className="ml-2 rounded-full bg-white/10 px-2 py-0.5 text-xs">
+                        {favoritesCount}
+                      </span>
+                    )}
+                  </button>
                   <button
                     type="button"
                     onClick={handleLogoutClick}
