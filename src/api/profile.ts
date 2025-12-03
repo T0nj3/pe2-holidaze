@@ -1,4 +1,5 @@
 import { apiFetch } from "./client"
+import type { VenueMedia, VenueLocation } from "./venues"
 
 export type Profile = {
   name: string
@@ -54,6 +55,36 @@ export async function updateProfile(name: string, body: UpdateProfileBody) {
       body: JSON.stringify(body),
       auth: true,
     },
+  )
+
+  return res.data
+}
+
+export type ProfileBookingVenue = {
+  id: string
+  name: string
+  media?: VenueMedia[]
+  location?: VenueLocation
+}
+
+export type ProfileBooking = {
+  id: string
+  dateFrom: string
+  dateTo: string
+  guests: number
+  venue?: ProfileBookingVenue | null
+}
+
+type RawProfileBookingsResponse = {
+  data: ProfileBooking[]
+}
+
+export async function getMyBookings(name: string): Promise<ProfileBooking[]> {
+  const res = await apiFetch<RawProfileBookingsResponse>(
+    `/holidaze/profiles/${encodeURIComponent(
+      name,
+    )}/bookings?_venue=true`,
+    { auth: true },
   )
 
   return res.data
