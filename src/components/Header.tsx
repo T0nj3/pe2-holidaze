@@ -69,7 +69,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
   }
 
   function goToBookings() {
-    navigate("/my-bookings")
+    navigate("/bookings")
     setIsProfileOpen(false)
     setIsMenuOpen(false)
   }
