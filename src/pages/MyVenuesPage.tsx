@@ -1,4 +1,3 @@
-// src/pages/MyVenuesPage.tsx
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import Header from "../components/Header"
@@ -121,7 +120,6 @@ export default function MyVenuesPage() {
           </div>
         </section>
 
-        {/* Errors / states */}
         {error && (
           <div className="mb-4 rounded-xl border border-red-500/40 bg-red-900/30 px-4 py-3 text-sm text-red-100">
             {error}

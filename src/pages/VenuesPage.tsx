@@ -1,7 +1,6 @@
 import {
   useEffect,
   useState,
-  type FormEvent,
   type MouseEvent,
 } from "react"
 import { Link, useSearchParams, useNavigate } from "react-router-dom"
@@ -11,6 +10,8 @@ import { getVenues, type Venue } from "../api/venues"
 import { useFavorites } from "../context/FavoritesContext"
 import { useAuth } from "../context/AuthContext"
 import { HiHeart, HiOutlineHeart } from "react-icons/hi2"
+import VenueSearchBar from "../components/VenueSearchBar"
+import VenueFiltersBar from "../components/VenueFiltersBar"
 
 const PAGE_SIZE = 12
 
@@ -35,6 +36,10 @@ export default function VenuesPage() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    setSearchInput(currentQuery)
+  }, [currentQuery])
+
+  useEffect(() => {
     let ignore = false
 
     async function load() {
@@ -47,8 +52,8 @@ export default function VenuesPage() {
 
         const data = await getVenues(
           trimmed
-            ? { search: trimmed, limit: 40 }
-            : { limit: 40 },
+            ? { search: trimmed, limit: 100 }
+            : { limit: 100 },
         )
 
         if (!ignore) {
@@ -72,8 +77,7 @@ export default function VenuesPage() {
     }
   }, [currentQuery])
 
-  function handleSearchSubmit(e: FormEvent) {
-    e.preventDefault()
+  function handleSearchSubmit() {
     const trimmed = searchInput.trim()
 
     if (trimmed) {
@@ -99,11 +103,22 @@ export default function VenuesPage() {
     setVisibleCount((prev) => prev + PAGE_SIZE)
   }
 
+  const normalizedQuery = currentQuery.trim().toLowerCase()
+
   const filteredVenues = venues.filter((venue) => {
     if (wifi && !venue.meta?.wifi) return false
     if (parking && !venue.meta?.parking) return false
     if (breakfast && !venue.meta?.breakfast) return false
     if (pets && !venue.meta?.pets) return false
+
+    if (normalizedQuery) {
+      const name = venue.name.toLowerCase()
+      const city = venue.location?.city?.toLowerCase() || ""
+      const country = venue.location?.country?.toLowerCase() || ""
+      const combined = `${name} ${city} ${country}`
+      if (!combined.includes(normalizedQuery)) return false
+    }
+
     return true
   })
 
@@ -117,68 +132,49 @@ export default function VenuesPage() {
       <main className="mx-auto max-w-6xl px-4 py-10 md:py-14">
         <header className="mb-8 flex flex-col gap-4 md:mb-10 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-3xl font-serif md:text-4xl">All stays</h1>
+            <h1 className="text-3xl font-serif md:text-4xl">
+              All stays
+            </h1>
             <p className="mt-2 text-sm text-white/70">
               Browse all available venues and find your next stay.
             </p>
           </div>
 
-          <form
+          <VenueSearchBar
+            value={searchInput}
+            onChange={setSearchInput}
             onSubmit={handleSearchSubmit}
-            className="flex w-full max-w-md items-center gap-2 rounded-full bg-section px-3 py-2"
-          >
-            <input
-              type="text"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search by name or city"
-              className="w-full bg-transparent px-2 text-sm text-white placeholder:text-white/40 focus:outline-none"
-            />
-            <button
-              type="submit"
-              className="rounded-full bg-olive px-4 py-1.5 text-sm font-semibold text-white hover:bg-olive/80"
-            >
-              Search
-            </button>
-          </form>
+          />
         </header>
 
-        <section className="mb-8 flex flex-wrap gap-3 text-sm">
-          <FilterChip
-            active={wifi}
-            onClick={() => setWifi((v) => !v)}
-            label="Wifi"
-          />
-          <FilterChip
-            active={parking}
-            onClick={() => setParking((v) => !v)}
-            label="Parking"
-          />
-          <FilterChip
-            active={breakfast}
-            onClick={() => setBreakfast((v) => !v)}
-            label="Breakfast"
-          />
-          <FilterChip
-            active={pets}
-            onClick={() => setPets((v) => !v)}
-            label="Pets allowed"
-          />
-          {(wifi || parking || breakfast || pets) && (
-            <button
-              type="button"
-              onClick={() => {
-                setWifi(false)
-                setParking(false)
-                setBreakfast(false)
-                setPets(false)
-              }}
-              className="text-xs text-white/60 underline"
-            >
-              Clear filters
-            </button>
-          )}
-        </section>
+        <VenueFiltersBar
+          wifi={wifi}
+          parking={parking}
+          breakfast={breakfast}
+          pets={pets}
+          onToggleWifi={() => setWifi((v) => !v)}
+          onToggleParking={() => setParking((v) => !v)}
+          onToggleBreakfast={() => setBreakfast((v) => !v)}
+          onTogglePets={() => setPets((v) => !v)}
+          onClear={() => {
+            setWifi(false)
+            setParking(false)
+            setBreakfast(false)
+            setPets(false)
+          }}
+        />
+
+        {filteredVenues.length > 0 && (
+          <p className="mb-6 text-xs text-white/55">
+            Showing {visibleVenues.length} of {filteredVenues.length} stays
+            {normalizedQuery && (
+              <>
+                {" "}
+                for <span className="font-semibold">"{currentQuery}"</span>
+              </>
+            )}
+          </p>
+        )}
 
         {error && (
           <div className="mb-6 rounded-xl border border-red-500/40 bg-red-900/30 px-4 py-3 text-sm text-red-100">
@@ -315,28 +311,5 @@ export default function VenuesPage() {
 
       <Footer />
     </div>
-  )
-}
-
-type FilterChipProps = {
-  active: boolean
-  label: string
-  onClick: () => void
-}
-
-function FilterChip({ active, label, onClick }: FilterChipProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={
-        "rounded-full border px-3 py-1 text-xs font-medium transition " +
-        (active
-          ? "border-olive bg-olive/20 text-olive"
-          : "border-white/20 bg-section text-white/80 hover:border-white/40")
-      }
-    >
-      {label}
-    </button>
   )
 }
