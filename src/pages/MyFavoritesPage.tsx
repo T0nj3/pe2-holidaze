@@ -1,4 +1,3 @@
-// src/pages/MyFavoritesPage.tsx
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 import { useFavorites } from "../context/FavoritesContext"
@@ -10,10 +9,10 @@ export default function MyFavoritesPage() {
   const { favoriteVenues, toggleFavorite } = useFavorites()
 
   return (
-    <div className="min-h-screen bg-base text-white">
+    <div className="flex min-h-screen flex-col bg-base text-white">
       <Header variant="default" />
 
-      <main className="mx-auto max-w-6xl px-4 py-10">
+      <main className="mx-auto max-w-6xl flex-1 px-4 py-10">
         <h1 className="mb-6 text-3xl font-serif md:text-4xl">Saved stays</h1>
 
         {favoriteVenues.length === 0 ? (
