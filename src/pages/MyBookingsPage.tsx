@@ -35,18 +35,18 @@ export default function MyBookingsPage() {
       setLoading(false)
       return
     }
-  
+
     const profileName = user.name
-  
+
     let ignore = false
-  
+
     async function load() {
       try {
         setLoading(true)
         setError(null)
-  
+
         const data = await getMyBookings(profileName)
-  
+
         if (!ignore) {
           setBookings(data)
         }
@@ -60,9 +60,9 @@ export default function MyBookingsPage() {
         }
       }
     }
-  
+
     load()
-  
+
     return () => {
       ignore = true
     }
@@ -95,10 +95,10 @@ export default function MyBookingsPage() {
   const hasAny = bookings.length > 0
 
   return (
-    <div className="min-h-screen bg-base text-white">
+    <div className="flex min-h-screen flex-col bg-base text-white">
       <Header variant="default" />
 
-      <main className="mx-auto max-w-6xl px-4 py-10 md:py-14">
+      <main className="mx-auto max-w-6xl flex-1 px-4 py-10 md:py-14">
         {!user && (
           <div className="mx-auto max-w-md rounded-2xl bg-section px-5 py-6 text-center">
             <h1 className="text-2xl font-serif">My bookings</h1>
@@ -133,7 +133,7 @@ export default function MyBookingsPage() {
                     key={index}
                     className="animate-pulse rounded-2xl bg-section p-4"
                   >
-                    <div className="mb-4 h-32 w-full rounded-xl bg-white/10" />
+                    <div className="mb-4 h-40 w-full rounded-xl bg-white/10" />
                     <div className="h-4 w-3/4 rounded bg-white/15" />
                     <div className="mt-2 h-3 w-1/2 rounded bg-white/10" />
                   </div>
@@ -184,12 +184,12 @@ export default function MyBookingsPage() {
                             key={booking.id}
                             to={
                               venue
-                                ? `/venue/${venue.id}`
+                                ? `/venues/${venue.id}`
                                 : "/venues"
                             }
                             className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-section transition hover:border-white/30"
                           >
-                            <div className="relative h-32 w-full overflow-hidden bg-white/5">
+                            <div className="relative h-40 w-full overflow-hidden bg-white/5 md:h-48">
                               {image?.url && (
                                 <img
                                   src={image.url}
@@ -210,16 +210,16 @@ export default function MyBookingsPage() {
                               <h3 className="line-clamp-1 text-base font-semibold">
                                 {venue?.name || "Unknown venue"}
                               </h3>
-                              <p className="mt-1 text-xs text-white/60">
+                              <p className="mt-1 text-sm text-white/60">
                                 {location || "Unknown location"}
                               </p>
 
-                              <p className="mt-3 text-xs text-white/75">
+                              <p className="mt-3 text-sm text-white/75">
                                 {formatDate(booking.dateFrom)} –{" "}
                                 {formatDate(booking.dateTo)}
                               </p>
 
-                              <p className="mt-1 text-xs text-white/65">
+                              <p className="mt-1 text-sm text-white/65">
                                 Guests:{" "}
                                 <span className="font-medium">
                                   {booking.guests}
@@ -254,12 +254,12 @@ export default function MyBookingsPage() {
                             key={booking.id}
                             to={
                               venue
-                                ? `/venue/${venue.id}`
+                                ? `/venues/${venue.id}`
                                 : "/venues"
                             }
                             className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/5 bg-section/80 opacity-80 transition hover:border-white/30 hover:opacity-100"
                           >
-                            <div className="relative h-32 w-full overflow-hidden bg-white/5">
+                            <div className="relative h-40 w-full overflow-hidden bg-white/5 md:h-48">
                               {image?.url && (
                                 <img
                                   src={image.url}
@@ -280,16 +280,16 @@ export default function MyBookingsPage() {
                               <h3 className="line-clamp-1 text-base font-semibold">
                                 {venue?.name || "Unknown venue"}
                               </h3>
-                              <p className="mt-1 text-xs text-white/60">
+                              <p className="mt-1 text-sm text-white/60">
                                 {location || "Unknown location"}
                               </p>
 
-                              <p className="mt-3 text-xs text-white/75">
+                              <p className="mt-3 text-sm text-white/75">
                                 {formatDate(booking.dateFrom)} –{" "}
                                 {formatDate(booking.dateTo)}
                               </p>
 
-                              <p className="mt-1 text-xs text-white/65">
+                              <p className="mt-1 text-sm text-white/65">
                                 Guests:{" "}
                                 <span className="font-medium">
                                   {booking.guests}

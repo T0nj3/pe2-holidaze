@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom"
 import Header from "../components/Header"
 import LoginForm from "../components/LoginForm"
 import RegisterForm from "../components/RegisterForm"
+import Footer from "../components/Footer"
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams()
@@ -66,6 +67,7 @@ export default function LoginPage() {
           </div>
         </div>
       </main>
+       <Footer />
     </div>
   )
 }

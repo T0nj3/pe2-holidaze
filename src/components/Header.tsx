@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom"
 import { HiHeart } from "react-icons/hi2"
 import { useAuth } from "../context/AuthContext"
 import { useFavorites } from "../context/FavoritesContext"
+import LogoHolidaze from "../assets/LogoHolidaze.png"
 
 type HeaderProps = {
   variant?: "landing" | "default"
@@ -115,10 +116,14 @@ export default function Header({ variant = "default" }: HeaderProps) {
               {isMenuOpen ? "✕" : "☰"}
             </button>
 
-            <Link to="/" className="text-3xl font-serif md:text-4xl">
-              Holidaze
+            <Link to="/" className="flex items-center gap-2 text-2xl font-serif md:text-3xl">
+            <img
+            src={LogoHolidaze}
+            alt="Holidaze logo"
+            className="h-8 w-8 md:h-9 md:w-9 object-contain"/>
+            <span>Holidaze</span>
             </Link>
-          </div>
+            </div>
 
           <nav className="hidden gap-8 text-lg md:flex">
             {mainNav.map((item) => (

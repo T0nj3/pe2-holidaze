@@ -124,10 +124,10 @@ export default function ProfilePage() {
   const bannerPreview = bannerUrl || profile?.banner?.url || ""
 
   return (
-    <div className="min-h-screen bg-base text-white">
-      <Header variant="default" />
+    <div className="flex min-h-screen flex-col bg-base text-white">
+    <Header variant="default" />
 
-      <main className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-10 md:py-14">
+    <main className="mx-auto flex max-w-5xl flex-1 flex-col gap-8 px-4 py-10 md:py-14">
         <h1 className="text-3xl font-serif md:text-4xl">Profile</h1>
 
         <section className="grid gap-8 md:grid-cols-[2fr,3fr]">

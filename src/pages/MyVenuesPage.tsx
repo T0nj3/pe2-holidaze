@@ -65,11 +65,10 @@ export default function MyVenuesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-base text-white">
+    <div className="flex min-h-screen flex-col bg-base text-white">
       <Header variant="default" />
 
-      <main className="mx-auto max-w-6xl px-4 py-8 md:py-10">
-        {/* Host hero card */}
+      <main className="mx-auto max-w-6xl flex-1 px-4 py-8 md:py-10">
         <section className="mb-8 overflow-hidden rounded-3xl bg-section shadow-lg shadow-black/40">
           <div className="h-32 w-full bg-gradient-to-r from-emerald-800 to-emerald-600 md:h-40" />
 

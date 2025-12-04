@@ -6,10 +6,10 @@ export default function HostProfilePage() {
   const { name } = useParams<{ name: string }>()
 
   return (
-    <div className="min-h-screen bg-base text-white">
+    <div className="flex min-h-screen flex-col bg-base text-white">
       <Header variant="default" />
 
-      <main className="mx-auto max-w-6xl px-4 py-10 md:py-14">
+      <main className="mx-auto max-w-6xl flex-1 px-4 py-10 md:py-14">
         <h1 className="text-3xl font-serif md:text-4xl">
           Host profile
         </h1>
