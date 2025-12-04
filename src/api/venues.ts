@@ -63,7 +63,6 @@ type RawVenueResponse = {
   data: Venue
 }
 
-// Brukes når du oppretter / oppdaterer venue
 export type VenueCreateUpdateBody = {
   name: string
   description: string
@@ -74,14 +73,30 @@ export type VenueCreateUpdateBody = {
   meta?: VenueMeta
 }
 
-// POPULAR (forsiden) – ingen sort i URL -> ingen 500
-export async function getPopularVenues(): Promise<Venue[]> {
-  const res = await apiFetch<RawVenueListResponse>(
-    "/holidaze/venues?limit=12&_owner=true&_bookings=true",
-  )
-
-  return res.data
-}
+// POPULAR (forsiden) – nå sortert nyeste førstexport async function getPopularVenues(): Promise<Venue[]> {
+  export async function getPopularVenues(): Promise<Venue[]> {
+    const res = await apiFetch<RawVenueListResponse>(
+      "/holidaze/venues?limit=50&_owner=true&_bookings=true&sort=created&sortOrder=desc",
+    )
+  
+    const venues = res.data.slice()
+  
+    venues.sort((a, b) => {
+      const aCount =
+        (a._count && typeof a._count.bookings === "number"
+          ? a._count.bookings
+          : a.bookings?.length ?? 0)
+  
+      const bCount =
+        (b._count && typeof b._count.bookings === "number"
+          ? b._count.bookings
+          : b.bookings?.length ?? 0)
+  
+      return bCount - aCount // flest bookings først
+    })
+  
+    return venues.slice(0, 12)
+  }
 
 // LISTE / VENUES PAGE
 export type GetVenuesParams = {
@@ -97,13 +112,14 @@ export async function getVenues(
 
   const searchParams = new URLSearchParams()
 
-  // søk på navn – vi filtrerer mer i frontend om du vil søke på city/country
   if (search && search.trim()) {
     searchParams.set("name", search.trim())
   }
 
   searchParams.set("limit", String(limit))
   searchParams.set("_owner", "true")
+  searchParams.set("sort", "created")
+  searchParams.set("sortOrder", "desc")
 
   if (typeof offset === "number" && offset > 0) {
     searchParams.set("offset", String(offset))
@@ -130,7 +146,7 @@ export async function getMyVenues(name: string): Promise<Venue[]> {
   const res = await apiFetch<RawVenueListResponse>(
     `/holidaze/profiles/${encodeURIComponent(
       name,
-    )}/venues?_owner=true&_bookings=true`,
+    )}/venues?_owner=true&_bookings=true&sort=created&sortOrder=desc`,
     { auth: true },
   )
 
