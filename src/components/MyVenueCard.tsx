@@ -1,4 +1,3 @@
-// src/components/MyVenueCard.tsx
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { HiStar, HiPencil, HiTrash } from "react-icons/hi2"

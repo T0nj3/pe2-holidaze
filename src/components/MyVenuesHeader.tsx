@@ -13,41 +13,34 @@ export default function MyVenuesHeader({
 }: Props) {
   if (loading && !profile) {
     return (
-      <section className="mb-8 overflow-hidden rounded-3xl border border-white/10 bg-section/80">
-        <div className="h-32 w-full animate-pulse bg-white/5" />
-        <div className="flex items-end gap-4 p-6">
-          <div className="h-16 w-16 rounded-full bg-white/10" />
-          <div className="flex-1 space-y-2">
-            <div className="h-4 w-40 rounded bg-white/10" />
-            <div className="h-3 w-60 rounded bg-white/5" />
-          </div>
-          <div className="h-9 w-32 rounded-full bg-white/10" />
-        </div>
-      </section>
+      <section className="mb-10 h-[260px] w-full animate-pulse rounded-3xl bg-section/50" />
     )
   }
 
   const avatarUrl = profile?.avatar?.url ?? null
   const bannerUrl = profile?.banner?.url ?? null
   const name = profile?.name ?? ""
-  const venuesCount = profile?._count?.venues ?? undefined
-  const bookingsCount = profile?._count?.bookings ?? undefined
+  const venuesCount = profile?._count?.venues ?? 0
+  const bookingsCount = profile?._count?.bookings ?? 0
 
   return (
-    <section className="mb-8 overflow-hidden rounded-3xl border border-white/10 bg-section/80 shadow-xl shadow-black/30">
-      <div className="relative h-32 w-full bg-gradient-to-r from-olive/40 via-emerald-500/20 to-sky-500/30">
-        {bannerUrl && (
-          <img
-            src={bannerUrl}
-            alt={profile?.banner?.alt || `${name}'s banner`}
-            className="h-full w-full object-cover"
-          />
-        )}
+    <section className="relative mb-12 w-full overflow-hidden rounded-3xl shadow-2xl shadow-black/40">
+      <div className="relative h-[260px] w-full md:h-[340px]">
+        <img
+          src={
+            bannerUrl ||
+            "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200"
+          }
+          alt={profile?.banner?.alt || `${name}'s banner`}
+          className="h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]" />
       </div>
 
-      <div className="flex flex-col gap-4 px-6 pb-5 pt-3 md:flex-row md:items-end md:justify-between">
-        <div className="flex items-end gap-4">
-          <div className="-mt-10 h-20 w-20 overflow-hidden rounded-full border-4 border-base bg-white/10">
+      <div className="absolute inset-0 flex flex-col justify-end px-6 pb-7 md:px-10 md:pb-9">
+        <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
+          <div className="h-[90px] w-[90px] overflow-hidden rounded-full border-4 border-white/20 shadow-xl md:h-[130px] md:w-[130px]">
             {avatarUrl ? (
               <img
                 src={avatarUrl}
@@ -55,49 +48,47 @@ export default function MyVenuesHeader({
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-xl font-semibold">
-                {name ? name.charAt(0).toUpperCase() : "?"}
+              <div className="flex h-full w-full items-center justify-center bg-white/10 text-3xl font-semibold text-white/80 md:text-4xl">
+                {name.charAt(0).toUpperCase()}
               </div>
             )}
           </div>
 
-          <div>
-            <h1 className="text-2xl font-serif md:text-3xl">
-              {name || "My venues"}
+          <div className="text-center sm:text-left">
+            <p className="text-[11px] uppercase tracking-[0.25em] text-white/70 md:text-[12px]">
+              Host Dashboard
+            </p>
+            <h1 className="mt-1 text-2xl font-serif text-white drop-shadow md:text-3xl lg:text-4xl">
+              {name}
             </h1>
-            <p className="mt-1 text-xs text-white/70">
-              Manage your stays, update details and create new venues.
+            <p className="mt-2 max-w-md text-xs text-white/70 md:text-sm">
+              Manage your stays, track your performance and grow as a host.
             </p>
 
-            <div className="mt-2 flex flex-wrap gap-3 text-xs text-white/70">
-              {typeof venuesCount === "number" && (
-                <span className="rounded-full bg-white/10 px-3 py-1">
-                  {venuesCount} venue
-                  {venuesCount === 1 ? "" : "s"}
-                </span>
-              )}
-              {typeof bookingsCount === "number" && (
-                <span className="rounded-full bg-white/10 px-3 py-1">
-                  {bookingsCount} total booking
-                  {bookingsCount === 1 ? "" : "s"}
-                </span>
-              )}
+            <div className="mt-3 flex flex-wrap justify-center gap-3 text-xs text-white/90 sm:justify-start">
+              <span className="rounded-full bg-white/10 px-4 py-1.5 font-medium backdrop-blur-sm">
+                {venuesCount} venue{venuesCount !== 1 ? "s" : ""}
+              </span>
+
+              <span className="rounded-full bg-white/10 px-4 py-1.5 font-medium backdrop-blur-sm">
+                {bookingsCount} booking{bookingsCount !== 1 ? "s" : ""}
+              </span>
+
               {profile?.venueManager && (
-                <span className="rounded-full bg-emerald-600/40 px-3 py-1 text-emerald-100">
-                  Venue manager
+                <span className="rounded-full bg-emerald-600/60 px-4 py-1.5 font-semibold text-white shadow">
+                  Verified Host
                 </span>
               )}
             </div>
           </div>
         </div>
 
-        <div className="flex gap-3">
+        <div className="mt-6 flex justify-center sm:justify-end">
           <button
-            type="button"
             onClick={onCreateClick}
-            className="rounded-full bg-olive px-5 py-2 text-sm font-semibold text-white hover:bg-olive/80"
+            className="rounded-full bg-olive px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-black/40 transition hover:bg-olive/80"
           >
-            Create new venue
+            + Create new venue
           </button>
         </div>
       </div>

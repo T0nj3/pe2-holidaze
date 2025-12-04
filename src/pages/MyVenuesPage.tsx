@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 import { useAuth } from "../context/AuthContext"
-import { getProfile } from "../api/profile"
+import { getProfile, type Profile } from "../api/profile"
 import { getMyVenues, type Venue } from "../api/venues"
 import MyVenueCard from "../components/MyVenueCard"
+import MyVenuesHeader from "../components/MyVenuesHeader"
 
 export default function MyVenuesPage() {
   const { user } = useAuth()
@@ -14,8 +15,7 @@ export default function MyVenuesPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [venues, setVenues] = useState<Venue[]>([])
-  const [venueCount, setVenueCount] = useState(0)
-  const [bookingCount, setBookingCount] = useState(0)
+  const [profile, setProfile] = useState<Profile | null>(null)
 
   useEffect(() => {
     if (!user) {
@@ -37,8 +37,7 @@ export default function MyVenuesPage() {
         ])
 
         if (!ignore) {
-          setVenueCount(profileRes._count?.venues ?? 0)
-          setBookingCount(profileRes._count?.bookings ?? 0)
+          setProfile(profileRes)
           setVenues(venuesRes)
         }
       } catch (err: any) {
@@ -61,63 +60,33 @@ export default function MyVenuesPage() {
 
   function handleVenueDeleted(id: string) {
     setVenues((prev) => prev.filter((v) => v.id !== id))
-    setVenueCount((prev) => Math.max(0, prev - 1))
+    setProfile((prev) =>
+      prev
+        ? {
+            ...prev,
+            _count: {
+              ...prev._count,
+              venues: Math.max(0, (prev._count?.venues ?? 1) - 1),
+            },
+          }
+        : prev,
+    )
+  }
+
+  function handleCreateClick() {
+    navigate("/venues/new")
   }
 
   return (
     <div className="flex min-h-screen flex-col bg-base text-white">
       <Header variant="default" />
 
-      <main className="mx-auto max-w-6xl flex-1 px-4 py-8 md:py-10">
-        <section className="mb-8 overflow-hidden rounded-3xl bg-section shadow-lg shadow-black/40">
-          <div className="h-32 w-full bg-gradient-to-r from-emerald-800 to-emerald-600 md:h-40" />
-
-          <div className="flex flex-col items-start justify-between gap-4 px-6 pb-6 pt-4 md:flex-row md:items-end">
-            <div className="flex items-center gap-4">
-              <div className="-mt-10 h-16 w-16 overflow-hidden rounded-full border-4 border-base bg-white/10 md:h-20 md:w-20">
-                {user?.avatar?.url ? (
-                  <img
-                    src={user.avatar.url}
-                    alt={user.avatar.alt || user.name}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-xl font-semibold">
-                    {user?.name.charAt(0).toUpperCase()}
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-white/60">
-                  Host dashboard
-                </p>
-                <h1 className="text-2xl font-serif md:text-3xl">
-                  {user?.name}
-                </h1>
-                <p className="mt-1 text-xs text-white/70">
-                  Manage your stays, update details and create new venues.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/80">
-                {venueCount} venue{venueCount === 1 ? "" : "s"}
-              </div>
-              <div className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/80">
-                {bookingCount} total booking
-                {bookingCount === 1 ? "" : "s"}
-              </div>
-              <Link
-                to="/venues/new"
-                className="rounded-full bg-olive px-4 py-2 text-sm font-semibold text-white hover:bg-olive/80"
-              >
-                Create new venue
-              </Link>
-            </div>
-          </div>
-        </section>
+      <main className="mx-auto flex-1 w-full max-w-6xl px-4 py-8 md:py-10">
+        <MyVenuesHeader
+          profile={profile}
+          loading={loading}
+          onCreateClick={handleCreateClick}
+        />
 
         {error && (
           <div className="mb-4 rounded-xl border border-red-500/40 bg-red-900/30 px-4 py-3 text-sm text-red-100">
