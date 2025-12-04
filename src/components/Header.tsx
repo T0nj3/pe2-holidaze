@@ -116,14 +116,18 @@ export default function Header({ variant = "default" }: HeaderProps) {
               {isMenuOpen ? "✕" : "☰"}
             </button>
 
-            <Link to="/" className="flex items-center gap-2 text-2xl font-serif md:text-3xl">
-            <img
-            src={LogoHolidaze}
-            alt="Holidaze logo"
-            className="h-8 w-8 md:h-9 md:w-9 object-contain"/>
-            <span>Holidaze</span>
+            <Link
+              to="/"
+              className="flex items-center gap-2 text-2xl font-serif md:text-3xl"
+            >
+              <img
+                src={LogoHolidaze}
+                alt="Holidaze logo"
+                className="h-8 w-8 object-contain md:h-9 md:w-9"
+              />
+              <span>Holidaze</span>
             </Link>
-            </div>
+          </div>
 
           <nav className="hidden gap-8 text-lg md:flex">
             {mainNav.map((item) => (
@@ -133,16 +137,23 @@ export default function Header({ variant = "default" }: HeaderProps) {
                 className={({ isActive }) =>
                   [
                     "relative group transition-colors",
-                    isActive ? "!text-white" : "!text-white/80 hover:!text-white",
+                    isActive
+                      ? "!text-white"
+                      : "!text-white/80 hover:!text-white",
                   ].join(" ")
                 }
               >
-                {item.label}
-                <span
-                  className="absolute left-0 -bottom-1 h-[2px] w-0 
-                             bg-white transition-all duration-300 
-                             group-hover:w-full"
-                />
+                {({ isActive }) => (
+                  <>
+                    <span>{item.label}</span>
+                    <span
+                      className={
+                        "absolute left-0 -bottom-1 h-[2px] bg-white transition-all duration-300 " +
+                        (isActive ? "w-full" : "w-0 group-hover:w-full")
+                      }
+                    />
+                  </>
+                )}
               </NavLink>
             ))}
           </nav>
@@ -196,7 +207,9 @@ export default function Header({ variant = "default" }: HeaderProps) {
                       </span>
                     )}
                   </div>
-                  <span className="max-w-[120px] truncate">{user?.name}</span>
+                  <span className="max-w-[120px] truncate">
+                    {user?.name}
+                  </span>
                 </button>
 
                 {isProfileOpen && (
@@ -294,12 +307,17 @@ export default function Header({ variant = "default" }: HeaderProps) {
                     ].join(" ")
                   }
                 >
-                  {item.label}
-                  <span
-                    className="absolute left-0 -bottom-1 h-[2px] w-0 
-                               bg-white transition-all duration-300 
-                               group-hover:w-full"
-                  />
+                  {({ isActive }) => (
+                    <>
+                      <span>{item.label}</span>
+                      <span
+                        className={
+                          "absolute left-0 -bottom-1 h-[2px] bg-white transition-all duration-300 " +
+                          (isActive ? "w-full" : "w-0 group-hover:w-full")
+                        }
+                      />
+                    </>
+                  )}
                 </NavLink>
               ))}
 
