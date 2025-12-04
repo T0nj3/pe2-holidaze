@@ -37,7 +37,6 @@ export default function MyBookingsPage() {
     }
 
     const profileName = user.name
-
     let ignore = false
 
     async function load() {
@@ -93,12 +92,14 @@ export default function MyBookingsPage() {
   )
 
   const hasAny = bookings.length > 0
+  const upcomingCount = upcoming.length
+  const pastCount = past.length
 
   return (
     <div className="flex min-h-screen flex-col bg-base text-white">
       <Header variant="default" />
 
-      <main className="mx-auto max-w-6xl flex-1 px-4 py-10 md:py-14">
+      <main className="mx-auto flex-1 w-full max-w-6xl px-4 py-10 md:py-14">
         {!user && (
           <div className="mx-auto max-w-md rounded-2xl bg-section px-5 py-6 text-center">
             <h1 className="text-2xl font-serif">My bookings</h1>
@@ -117,14 +118,41 @@ export default function MyBookingsPage() {
 
         {user && (
           <>
-            <header className="mb-8 md:mb-10">
-              <h1 className="text-3xl font-serif md:text-4xl">
-                My bookings
-              </h1>
-              <p className="mt-2 text-sm text-white/70">
-                Upcoming stays booked with your account.
-              </p>
-            </header>
+            <section className="mb-8 overflow-hidden rounded-3xl bg-section shadow-lg shadow-black/40 md:mb-10">
+              <div className="h-20 w-full bg-gradient-to-r from-emerald-800 to-emerald-600 md:h-24" />
+              <div className="flex flex-col items-start justify-between gap-4 px-6 pb-6 pt-4 md:flex-row md:items-end">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-white/60">
+                    Trip overview
+                  </p>
+                  <h1 className="text-2xl font-serif md:text-3xl">
+                    My bookings
+                  </h1>
+                  <p className="mt-1 text-xs text-white/70 md:text-sm">
+                    Stays you&apos;ve booked with{" "}
+                    <span className="font-semibold">
+                      {user.name}
+                    </span>
+                    .
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/80 md:text-sm">
+                    {upcomingCount} upcoming trip
+                    {upcomingCount === 1 ? "" : "s"}
+                  </div>
+                  <div className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/80 md:text-sm">
+                    {pastCount} past stay
+                    {pastCount === 1 ? "" : "s"}
+                  </div>
+                  <div className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/80 md:text-sm">
+                    {bookings.length} total booking
+                    {bookings.length === 1 ? "" : "s"}
+                  </div>
+                </div>
+              </div>
+            </section>
 
             {loading && (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -165,9 +193,14 @@ export default function MyBookingsPage() {
               <div className="space-y-10">
                 {upcoming.length > 0 && (
                   <section>
-                    <h2 className="mb-4 text-lg font-semibold text-white">
-                      Upcoming
-                    </h2>
+                    <div className="mb-4 flex items-baseline justify-between">
+                      <h2 className="text-lg font-semibold text-white md:text-xl">
+                        Upcoming
+                      </h2>
+                      <p className="text-xs text-white/60 md:text-sm">
+                        Your next trips, sorted by soonest first.
+                      </p>
+                    </div>
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                       {upcoming.map((booking) => {
                         const venue = booking.venue
@@ -235,9 +268,14 @@ export default function MyBookingsPage() {
 
                 {past.length > 0 && (
                   <section>
-                    <h2 className="mb-4 text-lg font-semibold text-white/80">
-                      Past stays
-                    </h2>
+                    <div className="mb-4 flex items-baseline justify-between">
+                      <h2 className="text-lg font-semibold text-white/80 md:text-xl">
+                        Past stays
+                      </h2>
+                      <p className="text-xs text-white/60 md:text-sm">
+                        A history of where you&apos;ve stayed before.
+                      </p>
+                    </div>
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                       {past.map((booking) => {
                         const venue = booking.venue
