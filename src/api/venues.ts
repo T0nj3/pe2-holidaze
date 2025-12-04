@@ -1,4 +1,3 @@
-// src/api/venues.ts
 import { apiFetch } from "./client"
 
 export type VenueMedia = {
@@ -73,7 +72,6 @@ export type VenueCreateUpdateBody = {
   meta?: VenueMeta
 }
 
-// POPULAR (forsiden) – nå sortert nyeste førstexport async function getPopularVenues(): Promise<Venue[]> {
   export async function getPopularVenues(): Promise<Venue[]> {
     const res = await apiFetch<RawVenueListResponse>(
       "/holidaze/venues?limit=50&_owner=true&_bookings=true&sort=created&sortOrder=desc",
@@ -92,13 +90,12 @@ export type VenueCreateUpdateBody = {
           ? b._count.bookings
           : b.bookings?.length ?? 0)
   
-      return bCount - aCount // flest bookings først
+      return bCount - aCount 
     })
   
     return venues.slice(0, 12)
   }
 
-// LISTE / VENUES PAGE
 export type GetVenuesParams = {
   search?: string
   limit?: number
@@ -132,7 +129,6 @@ export async function getVenues(
   return res.data
 }
 
-// SINGLE VENUE / DETALJSIDE
 export async function getVenueById(id: string): Promise<Venue> {
   const res = await apiFetch<RawVenueResponse>(
     `/holidaze/venues/${encodeURIComponent(id)}?_owner=true&_bookings=true`,
@@ -141,7 +137,6 @@ export async function getVenueById(id: string): Promise<Venue> {
   return res.data
 }
 
-// VENUES FOR CURRENT HOST (MY VENUES PAGE)
 export async function getMyVenues(name: string): Promise<Venue[]> {
   const res = await apiFetch<RawVenueListResponse>(
     `/holidaze/profiles/${encodeURIComponent(
@@ -153,7 +148,6 @@ export async function getMyVenues(name: string): Promise<Venue[]> {
   return res.data
 }
 
-// CREATE / UPDATE / DELETE – brukt av VenueEditorPage
 export async function createVenue(
   body: VenueCreateUpdateBody,
 ): Promise<Venue> {
