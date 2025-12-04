@@ -40,7 +40,7 @@ export default function WhyBookSection() {
           Why book with Holidaze?
         </h2>
 
-        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 cursor-pointer">
           {features.map(({ title, description, Icon }) => (
             <div
               key={title}
