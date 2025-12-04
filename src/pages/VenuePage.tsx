@@ -7,8 +7,6 @@ import { HiArrowLeft } from "react-icons/hi2"
 import VenueMainInfo from "../components/VenueMainInfo"
 import VenueBookingCard from "../components/VenueBookingCard"
 
-// Booking flow tested and confirmed
-
 export default function VenuePage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
