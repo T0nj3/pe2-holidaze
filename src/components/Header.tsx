@@ -9,6 +9,11 @@ type HeaderProps = {
   variant?: "landing" | "default"
 }
 
+type MainNavItem = {
+  label: string
+  to: string
+}
+
 export default function Header({ variant = "default" }: HeaderProps) {
   const isLanding = variant === "landing"
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -23,9 +28,10 @@ export default function Header({ variant = "default" }: HeaderProps) {
 
   const navigate = useNavigate()
 
-  const mainNav = [
+  const mainNav: MainNavItem[] = [
     { label: "Home", to: "/" },
     { label: "Venues", to: "/venues" },
+    ...(isLoggedIn ? [{ label: "My bookings", to: "/bookings" }] : []),
   ]
 
   const hostCtaLabel = !isLoggedIn
