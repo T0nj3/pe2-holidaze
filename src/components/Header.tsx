@@ -16,7 +16,7 @@ type MainNavItem = {
 
 export default function Header({ variant = "default" }: HeaderProps) {
   const isLanding = variant === "landing"
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
   const [isProfileOpen, setIsProfileOpen] = useState(false)
 
   const { user, logout } = useAuth()
@@ -48,20 +48,17 @@ export default function Header({ variant = "default" }: HeaderProps) {
 
   function handleLoginClick() {
     navigate("/login")
-    setIsMenuOpen(false)
     setIsProfileOpen(false)
   }
 
   async function handleLogoutClick() {
     await logout()
-    setIsMenuOpen(false)
     setIsProfileOpen(false)
     navigate("/")
   }
 
   function handleHostClick() {
     navigate(hostCtaTarget)
-    setIsMenuOpen(false)
     setIsProfileOpen(false)
   }
 
@@ -72,25 +69,21 @@ export default function Header({ variant = "default" }: HeaderProps) {
   function goToProfile() {
     navigate("/profile")
     setIsProfileOpen(false)
-    setIsMenuOpen(false)
   }
 
   function goToBookings() {
     navigate("/bookings")
     setIsProfileOpen(false)
-    setIsMenuOpen(false)
   }
 
   function goToMyVenues() {
     navigate("/my-venues")
     setIsProfileOpen(false)
-    setIsMenuOpen(false)
   }
 
   function goToFavorites() {
     navigate("/favorites")
     setIsProfileOpen(false)
-    setIsMenuOpen(false)
   }
 
   const avatarUrl = (user as any)?.avatar?.url as string | undefined
@@ -108,20 +101,8 @@ export default function Header({ variant = "default" }: HeaderProps) {
           (isLanding ? "bg-transparent" : "bg-base")
         }
       >
-        <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4 md:h-24 md:px-6">
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              className="text-3xl leading-none md:hidden"
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-              onClick={() => {
-                setIsMenuOpen((open) => !open)
-                setIsProfileOpen(false)
-              }}
-            >
-              {isMenuOpen ? "✕" : "☰"}
-            </button>
-
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:h-24 md:px-6">
+          <div className="flex items-center gap-3">
             <Link
               to="/"
               className="flex items-center gap-2 text-2xl font-serif md:text-3xl"
@@ -213,9 +194,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
                       </span>
                     )}
                   </div>
-                  <span className="max-w-[120px] truncate">
-                    {user?.name}
-                  </span>
+                  <span className="max-w-[120px] truncate">{user?.name}</span>
                 </button>
 
                 {isProfileOpen && (
@@ -269,8 +248,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
 
             {!isLoggedIn && (
               <button
-                className="rounded-md bg-olive px-4 py-2 text-sm font-medium 
-                           !text-white hover:bg-olive/80 md:px-5 md:text-base"
+                className="rounded-md bg-olive px-4 py-2 text-sm font-medium !text-white hover:bg-olive/80 md:px-5 md:text-base"
                 onClick={handleLoginClick}
               >
                 Log in
@@ -287,110 +265,6 @@ export default function Header({ variant = "default" }: HeaderProps) {
             )}
           </div>
         </div>
-
-        {isMenuOpen && (
-          <div
-            className={
-              "border-t border-white/10 md:hidden " +
-              (isLanding ? "bg-base/80 backdrop-blur-sm" : "bg-base")
-            }
-          >
-            <nav className="flex flex-col items-center gap-4 py-4 text-lg">
-              {mainNav.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => {
-                    setIsMenuOpen(false)
-                    setIsProfileOpen(false)
-                  }}
-                  className={({ isActive }) =>
-                    [
-                      "relative group",
-                      isActive
-                        ? "!text-white"
-                        : "!text-white/80 hover:text-white",
-                    ].join(" ")
-                  }
-                >
-                  {({ isActive }) => (
-                    <>
-                      <span>{item.label}</span>
-                      <span
-                        className={
-                          "absolute left-0 -bottom-1 h-[2px] bg-white transition-all duration-300 " +
-                          (isActive ? "w-full" : "w-0 group-hover:w-full")
-                        }
-                      />
-                    </>
-                  )}
-                </NavLink>
-              ))}
-
-              <button
-                type="button"
-                onClick={handleHostClick}
-                className="mt-2 w-11/12 rounded-full border border-olive px-5 py-2 text-base font-semibold text-olive hover:bg-olive/10"
-              >
-                {hostCtaLabel}
-              </button>
-
-              {isLoggedIn ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={goToProfile}
-                    className="mt-2 w-11/12 rounded-md bg-white/5 px-5 py-2 text-base !text-white hover:bg-white/10"
-                  >
-                    Manage profile
-                  </button>
-                  <button
-                    type="button"
-                    onClick={goToBookings}
-                    className="w-11/12 rounded-md bg-white/5 px-5 py-2 text-base !text-white hover:bg-white/10"
-                  >
-                    My bookings
-                  </button>
-                  {isVenueManager && (
-                    <button
-                      type="button"
-                      onClick={goToMyVenues}
-                      className="w-11/12 rounded-md bg-white/5 px-5 py-2 text-base !text-white hover:bg-white/10"
-                    >
-                      My venues
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={goToFavorites}
-                    className="w-11/12 rounded-md bg-white/5 px-5 py-2 text-base !text-white hover:bg-white/10"
-                  >
-                    Favourites
-                    {favoritesCount > 0 && (
-                      <span className="ml-2 rounded-full bg-white/10 px-2 py-0.5 text-xs">
-                        {favoritesCount}
-                      </span>
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleLogoutClick}
-                    className="mt-2 w-11/12 rounded-md bg-red-900/40 px-5 py-2 text-base font-semibold text-red-100 hover:bg-red-900/60"
-                  >
-                    Log out
-                  </button>
-                </>
-              ) : (
-                <button
-                  className="mt-2 w-11/12 rounded-md bg-olive px-5 py-2 text-base font-semibold !text-white hover:bg-olive/80"
-                  onClick={handleLoginClick}
-                >
-                  Log in
-                </button>
-              )}
-            </nav>
-          </div>
-        )}
       </div>
     </header>
   )

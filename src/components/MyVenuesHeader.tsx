@@ -24,8 +24,8 @@ export default function MyVenuesHeader({
   const bookingsCount = profile?._count?.bookings ?? 0
 
   return (
-    <section className="relative mb-12 w-full overflow-hidden rounded-3xl shadow-2xl shadow-black/40">
-      <div className="relative h-[260px] w-full md:h-[340px]">
+    <section className="relative mt-4 mb-12 w-full rounded-3xl shadow-2xl shadow-black/40 overflow-hidden">
+      <div className="relative h-[340px] w-full md:h-[360px]">
         <img
           src={
             bannerUrl ||
@@ -34,13 +34,12 @@ export default function MyVenuesHeader({
           alt={profile?.banner?.alt || `${name}'s banner`}
           className="h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-        <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/10" />
       </div>
 
-      <div className="absolute inset-0 flex flex-col justify-end px-6 pb-7 md:px-10 md:pb-9">
-        <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
-          <div className="h-[90px] w-[90px] overflow-hidden rounded-full border-4 border-white/20 shadow-xl md:h-[130px] md:w-[130px]">
+      <div className="absolute inset-0 flex flex-col items-center justify-between px-6 pb-7 pt-6 md:px-10 md:pb-9 md:pt-8">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-[96px] w-[96px] overflow-hidden rounded-full border-4 border-white/30 shadow-xl md:h-[120px] md:w-[120px]">
             {avatarUrl ? (
               <img
                 src={avatarUrl}
@@ -48,45 +47,45 @@ export default function MyVenuesHeader({
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center bg-white/10 text-3xl font-semibold text-white/80 md:text-4xl">
+              <div className="flex h-full w-full items-center justify-center bg-white/10 text-3xl font-semibold text-white/85 md:text-4xl">
                 {name.charAt(0).toUpperCase()}
               </div>
             )}
           </div>
 
-          <div className="text-center sm:text-left">
+          <div className="text-center">
             <p className="text-[11px] uppercase tracking-[0.25em] text-white/70 md:text-[12px]">
               Host Dashboard
             </p>
             <h1 className="mt-1 text-2xl font-serif text-white drop-shadow md:text-3xl lg:text-4xl">
               {name}
             </h1>
-            <p className="mt-2 max-w-md text-xs text-white/70 md:text-sm">
+            <p className="mt-2 max-w-md text-xs text-white/75 md:text-sm">
               Manage your stays, track your performance and grow as a host.
             </p>
-
-            <div className="mt-3 flex flex-wrap justify-center gap-3 text-xs text-white/90 sm:justify-start">
-              <span className="rounded-full bg-white/10 px-4 py-1.5 font-medium backdrop-blur-sm">
-                {venuesCount} venue{venuesCount !== 1 ? "s" : ""}
-              </span>
-
-              <span className="rounded-full bg-white/10 px-4 py-1.5 font-medium backdrop-blur-sm">
-                {bookingsCount} booking{bookingsCount !== 1 ? "s" : ""}
-              </span>
-
-              {profile?.venueManager && (
-                <span className="rounded-full bg-emerald-600/60 px-4 py-1.5 font-semibold text-white shadow">
-                  Verified Host
-                </span>
-              )}
-            </div>
           </div>
         </div>
 
-        <div className="mt-6 flex justify-center sm:justify-end">
+        <div className="flex flex-col items-center gap-4 w-full">
+          <div className="flex flex-wrap justify-center gap-3 text-xs text-white/90">
+            <span className="rounded-full bg-white/12 px-4 py-1.5 font-medium backdrop-blur-sm">
+              {venuesCount} venue{venuesCount !== 1 ? "s" : ""}
+            </span>
+
+            <span className="rounded-full bg-white/12 px-4 py-1.5 font-medium backdrop-blur-sm">
+              {bookingsCount} booking{bookingsCount !== 1 ? "s" : ""}
+            </span>
+
+            {profile?.venueManager && (
+              <span className="rounded-full bg-emerald-600/70 px-4 py-1.5 font-semibold text-white shadow">
+                Verified Host
+              </span>
+            )}
+          </div>
+
           <button
             onClick={onCreateClick}
-            className="rounded-full bg-olive px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-black/40 transition hover:bg-olive/80"
+            className="w-full max-w-xs rounded-full bg-olive px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-black/40 transition hover:bg-olive/80"
           >
             + Create new venue
           </button>
