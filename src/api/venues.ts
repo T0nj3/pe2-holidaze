@@ -35,6 +35,15 @@ export type VenueBooking = {
   id: string
   dateFrom: string
   dateTo: string
+  guests: number
+  customer?: {
+    name: string
+    email?: string | null
+    avatar?: {
+      url: string
+      alt?: string | null
+    } | null
+  } | null
 }
 
 export type Venue = {
@@ -72,29 +81,29 @@ export type VenueCreateUpdateBody = {
   meta?: VenueMeta
 }
 
-  export async function getPopularVenues(): Promise<Venue[]> {
-    const res = await apiFetch<RawVenueListResponse>(
-      "/holidaze/venues?limit=50&_owner=true&_bookings=true&sort=created&sortOrder=desc",
-    )
-  
-    const venues = res.data.slice()
-  
-    venues.sort((a, b) => {
-      const aCount =
-        (a._count && typeof a._count.bookings === "number"
-          ? a._count.bookings
-          : a.bookings?.length ?? 0)
-  
-      const bCount =
-        (b._count && typeof b._count.bookings === "number"
-          ? b._count.bookings
-          : b.bookings?.length ?? 0)
-  
-      return bCount - aCount 
-    })
-  
-    return venues.slice(0, 12)
-  }
+export async function getPopularVenues(): Promise<Venue[]> {
+  const res = await apiFetch<RawVenueListResponse>(
+    "/holidaze/venues?limit=50&_owner=true&_bookings=true&sort=created&sortOrder=desc",
+  )
+
+  const venues = res.data.slice()
+
+  venues.sort((a, b) => {
+    const aCount =
+      (a._count && typeof a._count.bookings === "number"
+        ? a._count.bookings
+        : a.bookings?.length ?? 0)
+
+    const bCount =
+      (b._count && typeof b._count.bookings === "number"
+        ? b._count.bookings
+        : b.bookings?.length ?? 0)
+
+    return bCount - aCount
+  })
+
+  return venues.slice(0, 12)
+}
 
 export type GetVenuesParams = {
   search?: string
