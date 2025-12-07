@@ -55,7 +55,7 @@ npm -v
 git clone 
 cd holidaze
 
-#### Replace  with your actual Git repository URL.
+#### https://github.com/T0nj3/pe2-holidaze
 
 ⸻
 
