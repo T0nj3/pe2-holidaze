@@ -1,12 +1,60 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { HiStar, HiPencil, HiTrash } from "react-icons/hi2"
-import type { Venue } from "../api/venues"
+import type { Venue, VenueBooking } from "../api/venues"
 import { deleteVenue } from "../api/venues"
 
 type Props = {
   venue: Venue
   onDeleted: (id: string) => void
+}
+
+function getUpcomingBookings(bookings: VenueBooking[] | undefined): VenueBooking[] {
+  if (!bookings || bookings.length === 0) return []
+  const now = new Date()
+  return bookings
+    .filter((booking) => {
+      const to = new Date(booking.dateTo)
+      return to >= now
+    })
+    .sort((a, b) => {
+      return new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime()
+    })
+}
+
+function formatDateRange(from: string, to: string): string {
+  const fromDate = new Date(from)
+  const toDate = new Date(to)
+
+  const sameMonth = fromDate.getMonth() === toDate.getMonth()
+  const sameYear = fromDate.getFullYear() === toDate.getFullYear()
+
+  const fromDay = fromDate.getDate()
+  const toDay = toDate.getDate()
+  const month = fromDate.toLocaleString("en-GB", { month: "short" })
+  const year = fromDate.getFullYear()
+
+  if (sameMonth && sameYear) {
+    return `${fromDay}–${toDay} ${month} ${year}`
+  }
+
+  const fromStr = fromDate.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  })
+  const toStr = toDate.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  })
+
+  return `${fromStr} – ${toStr}`
+}
+
+function getCustomerInitial(name?: string | null) {
+  if (!name || !name.trim()) return "G"
+  return name.trim().charAt(0).toUpperCase()
 }
 
 export default function MyVenueCard({ venue, onDeleted }: Props) {
@@ -20,6 +68,8 @@ export default function MyVenueCard({ venue, onDeleted }: Props) {
   ]
     .filter(Boolean)
     .join(", ")
+
+  const upcomingBookings = getUpcomingBookings(venue.bookings)
 
   async function handleDelete() {
     if (deleting) return
@@ -92,7 +142,71 @@ export default function MyVenueCard({ venue, onDeleted }: Props) {
           / night · Max {venue.maxGuests} guests
         </p>
 
-        <div className="mt-auto pt-4">
+        <div className="mt-4 rounded-2xl border border-white/8 bg-black/20 p-3">
+          <div className="mb-2 flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-white/60">
+            <span>Upcoming bookings</span>
+            {upcomingBookings.length > 0 && (
+              <span>{upcomingBookings.length}</span>
+            )}
+          </div>
+
+          {upcomingBookings.length === 0 ? (
+            <p className="text-[11px] text-white/45">
+              No upcoming bookings for this venue.
+            </p>
+          ) : (
+            <ul className="space-y-2 max-h-40 overflow-y-auto pr-1">
+              {upcomingBookings.slice(0, 3).map((booking) => {
+                const customer = booking.customer
+                const customerName = customer?.name || "Guest"
+                const avatarUrl = customer?.avatar?.url || null
+
+                return (
+                  <li
+                    key={booking.id}
+                    className="flex items-center justify-between gap-3 rounded-xl bg-white/5 px-3 py-2 text-xs"
+                  >
+                    <div>
+                      <p className="font-semibold text-white">
+                        {formatDateRange(booking.dateFrom, booking.dateTo)}
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-white/65">
+                        {booking.guests} guest
+                        {booking.guests !== 1 ? "s" : ""}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="h-7 w-7 overflow-hidden rounded-full bg-white/10 text-[11px] font-semibold text-white/80 flex items-center justify-center">
+                        {avatarUrl ? (
+                          <img
+                            src={avatarUrl}
+                            alt={customerName}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span>{getCustomerInitial(customerName)}</span>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[11px] font-semibold text-white/90">
+                          Booked by {customerName}
+                        </p>
+                        {customer?.email && (
+                          <p className="max-w-[140px] truncate text-[10px] text-white/60">
+                            {customer.email}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
+
+        <div className="mt-4 pt-2">
           {error && (
             <p className="mb-3 rounded-md border border-red-500/40 bg-red-900/40 px-3 py-2 text-[11px] text-red-100">
               {error}
